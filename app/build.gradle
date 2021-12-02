@@ -42,4 +42,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     //recyclrvew
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
+
+    //read and write
+    implementation 'commons-io:commons-io:2.11.0'
 }
