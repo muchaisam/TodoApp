@@ -2,61 +2,89 @@ package com.example.todoapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
+import android.util.SparseBooleanArray
+import android.view.View
+import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.shashank.sony.fancytoastlib.FancyToast
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.IOException
 import java.nio.charset.Charset
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    var listofTasks = mutableListOf<String>()
-    lateinit var adapter : TaskItemAdapter
+    var itemlist = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out)
 
-    val onLongClickListener = object : TaskItemAdapter.OnLongClickListener{
-        override fun onItemLongClicked(position: Int) {
-            //1. Remove item from the list
-            listofTasks.removeAt(position)
-            //2. Notify the adapter that data has changed
+        //greetings stuff
+        val greetings = findViewById<TextView>(R.id.greetings)
+        val c = Calendar.getInstance()
+        val timeOfDay = c[Calendar.HOUR_OF_DAY]
+
+        if (timeOfDay in 0..11) {
+            greetings.setText("Good Morning")
+        } else if (timeOfDay in 12..15) {
+            greetings.setText("Good Afternoon")
+        } else if (timeOfDay in 16..23) {
+            greetings.setText("Good Evening")
+        }
+
+        // Initializing the array lists and the adapter
+        val itemlist = arrayListOf<String>()
+        val adapter =ArrayAdapter(this,
+            android.R.layout.simple_list_item_multiple_choice
+            , itemlist)
+
+        loadItems()
+        val add = findViewById<Button>(R.id.add)
+        val editText = findViewById<EditText>(R.id.editText)
+        val listView = findViewById<ListView>(R.id.listView)
+        val delete = findViewById<Button>(R.id.delete)
+        val clear = findViewById<Button>(R.id.clear)
+        // Adding the items to the list when the add button is pressed
+        add.setOnClickListener {
+
+            itemlist.add(editText.text.toString())
+            listView.adapter =  adapter
             adapter.notifyDataSetChanged()
-
+            // This is because every time when you add the item the input space or the eidt text space will be cleared
+            editText.text.clear()
             saveItems()
         }
+        // Clearing all the items in the list when the clear button is pressed
+        clear.setOnClickListener {
 
-    }
-        loadItems()
-
-        // Lookup the recyclerview in activity layout
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
-        // Initialize contacts
-        adapter = TaskItemAdapter(listofTasks, onLongClickListener)
-        // Attach the adapter to the recyclerview to populate items
-        recyclerView.adapter = adapter
-        // Set layout manager to position the items
-        recyclerView.layoutManager = LinearLayoutManager(this)
-
-        val inputField = findViewById<EditText>(R.id.editing)
-
-        //setup the button and inut field so that the user can enter a task and add it to the list
-        findViewById<Button>(R.id.button).setOnClickListener{
-            //1. Grab the text a user has input to the field
-            val userInputtedTask = inputField.text.toString()
-            //2. Add the string to our list of tasks
-            listofTasks.add(userInputtedTask)
-            //notify the adapter
-            adapter.notifyItemInserted(listofTasks.size - 1)
-            //3. reset the text field
-            inputField.setText("")
+            itemlist.clear()
+            adapter.notifyDataSetChanged()
+            saveItems()
         }
-
-        saveItems()
+        // Adding the toast message to the list when an item on the list is pressed
+        listView.setOnItemClickListener { adapterView, view, i, l ->
+            FancyToast.makeText(this, "You Selected the item --> "+itemlist.get(i), FancyToast.SUCCESS, FancyToast.LENGTH_SHORT, false).show()
+        }
+        // Selecting and Deleting the items from the list when the delete button is pressed
+        delete.setOnClickListener {
+            val position: SparseBooleanArray = listView.checkedItemPositions
+            val count = listView.count
+            var item = count - 1
+            while (item >= 0) {
+                if (position.get(item))
+                {
+                    adapter.remove(itemlist.get(item))
+                }
+                item--
+            }
+            position.clear()
+            adapter.notifyDataSetChanged()
+            saveItems()
+        }
     }
 
     //save the data that the user has input
@@ -70,18 +98,17 @@ class MainActivity : AppCompatActivity() {
     //load the items by reading every line of the data file
     fun loadItems(){
         try {
-            listofTasks = FileUtils.readLines(getDataFile(), Charset.defaultCharset())
+            itemlist = FileUtils.readLines(getDataFile(), Charset.defaultCharset())
         }catch (ioException : IOException){
             ioException.printStackTrace()
         }
     }
     //save items by reading them into a data file
     fun saveItems(){
-       try {
-           org.apache.commons.io.FileUtils.writeLines(getDataFile(), listofTasks)
-       }catch (ioException: IOException){
-           ioException.printStackTrace()
-       }
+        try {
+            org.apache.commons.io.FileUtils.writeLines(getDataFile(), itemlist)
+        }catch (ioException: IOException){
+            ioException.printStackTrace()
+        }
     }
-
 }
