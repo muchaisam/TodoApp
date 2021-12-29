@@ -45,4 +45,7 @@ dependencies {
 
     //read and write
     implementation 'commons-io:commons-io:2.11.0'
+
+    //fancytoast
+    implementation 'io.github.shashank02051997:FancyToast:2.0.1'
 }
