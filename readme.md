@@ -4,7 +4,7 @@
 
 Submitted by: **Sam Muchai**
 
-Time spent: **10** hours spent in total
+Time spent: **15** hours spent in total
 
 ## User Stories
 
@@ -26,14 +26,11 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='https://i.imgur.com/nuesHvt.gifv' title='Video Walkthrough' width='' alt='Video Walkthrough' />
-
-GIF created with [LiceCap](http://www.cockos.com/licecap/).
-
+[Video Walkthrough](https://streamable.com/wusjka)
 
 ## License
 
-    Copyright [yyyy] [name of copyright owner]
+    Copyright [2021] [Sam Muchai]
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
